@@ -12,6 +12,7 @@ spec:
       labels:
         app: boardgame
     spec:
+      serviceAccountName: webapps
       containers:
         - name: boardgame
           image: charlesjatto/boardgame:latest # Image that will be used to containers in the cluster
