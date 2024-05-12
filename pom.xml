@@ -81,6 +81,21 @@
 </dependency>
 	</dependencies>
 
+<distributionManagement>
+    <repository>
+        <id>nexus</id>
+        <name>Internal Repository</name>
+        <url>https://d4d8-99-242-174-189.ngrok-free.app/repository/boardgame-releases/</url>
+    </repository>
+    <snapshotRepository>
+        <id>nexus</id>
+        <name>Snapshot Repository</name>
+        <url>https://d4d8-99-242-174-189.ngrok-free.app/repository/boardgame-snapshots/</url>
+    </snapshotRepository>
+	
+</distributionManagement>
+
+
 	<build>
 		<plugins>
 			<plugin>
