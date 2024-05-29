@@ -21,7 +21,7 @@
     		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
     		<sonar.language>java</sonar.language>
-		<sonar.host.url>https://f9c4-99-242-174-189.ngrok-free.app/</sonar.host.url>
+		<sonar.host.url>https://a209-99-242-174-189.ngrok-free.app/</sonar.host.url>
 		<sonar.login>admin</sonar.login>
 		<sonar.password>admin123</sonar.password>
 		
@@ -85,12 +85,12 @@
     <repository>
         <id>nexus</id>
         <name>Internal Repository</name>
-        <url>https://c80a-99-242-174-189.ngrok-free.app/repository/boardgame-releases/</url>
+        <url>https://e61e-99-242-174-189.ngrok-free.app/repository/boardgame-releases/</url>
     </repository>
     <snapshotRepository>
         <id>nexus</id>
         <name>Snapshot Repository</name>
-        <url>https://c80a-99-242-174-189.ngrok-free.app/repository/boardgame-snapshots/</url>
+        <url>https://e61e-99-242-174-189.ngrok-free.app/repository/boardgame-snapshots/</url>
     </snapshotRepository>
 	
 </distributionManagement>
