@@ -1,0 +1,120 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven'
+    }
+
+    stages {
+        stage('Clone') {
+            steps {
+                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/cxharles/Boardgame.git'
+            }
+        }
+        
+        stage('Compile') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        
+        stage('Trivy file System Scan') {
+            steps {
+                sh 'trivy fs --format table -o trivy-fs-report.html /home/charlesjatto/project-folder/Boardgame'
+            }
+        }
+        
+        stage('Sonarqube') {
+            steps {
+                sh 'mvn sonar:sonar'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        
+        stage('Nexus Deploy') {
+            steps {
+                sh 'mvn deploy'
+            }
+        }
+        
+        stage('DockerBuild') {
+            steps {
+                sh 'docker build -t charlesjatto/boardgame:latest .'
+            }
+        }
+        
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image --format table -o trivy-image-report.html charlesjatto/boardgame:latest '
+            }
+        }
+        
+        stage('DockerPush') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'DockerHubCredentials', variable: 'DockerHubCredentials')]) {
+                        sh 'docker login -u charlesjatto -p ${DockerHubCredentials}'
+                        sh 'docker push charlesjatto/boardgame:latest'
+                   }
+                }
+            }
+        }
+        
+        stage('DeployToKubernetes') {
+            steps {
+                withKubeConfig(caCertificate: '', clusterName: 'minikube-cluster', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://192.168.49.2:8443') {
+                    sh ' kubectl apply -f deployment-service.yaml'
+                    sh ' kubectl get pod -n webapps'
+                    sh ' kubectl get svc -n webapps'
+                }
+            }
+        }
+    }
+    
+    post {
+    always {
+        script {
+            def jobName = env.JOB_NAME
+            def buildNumber = env.BUILD_NUMBER
+            def pipelineStatus = currentBuild.result ?: 'UNKNOWN'
+            def bannerColor = pipelineStatus.toUpperCase() == 'SUCCESS' ? 'green' : 'red'
+
+            def body = """
+                <html>
+                <body>
+                <div style="border: 4px solid ${bannerColor}; padding: 10px;">
+                <h2>${jobName} - Build ${buildNumber}</h2>
+                <div style="background-color: ${bannerColor}; padding: 10px;">
+                <h3 style="color: white;">Pipeline Status: ${pipelineStatus.toUpperCase()}</h3>
+                </div>
+                <p>Check the <a href="${BUILD_URL}">console output</a>.</p>
+                </div>
+                </body>
+                </html>
+            """
+           
+           emailext (
+                subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
+                body: body,
+                to: 'jattocharles777@gmail.com',
+                from: 'jenkins@example.com',
+                replyTo: 'jenkins@example.com',
+                mimeType: 'text/html',
+                attachmentsPattern: 'trivy-image-report.html'
+            )
+        }
+    }
+}
+
+}
