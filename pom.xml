@@ -85,12 +85,12 @@
     <repository>
         <id>nexus</id>
         <name>Internal Repository</name>
-        <url>https://9c10-99-242-174-189.ngrok-free.app/repository/maven-releases/</url>
+        <url>https://9c10-99-242-174-189.ngrok-free.app/repository/boardgame-release/</url>
     </repository>
     <snapshotRepository>
         <id>nexus</id>
         <name>Snapshot Repository</name>
-        <url>https://9c10-99-242-174-189.ngrok-free.app/repository/maven-snapshots/</url>
+        <url>https://9c10-99-242-174-189.ngrok-free.app/repository/boardgame-snapshot/</url>
     </snapshotRepository>
 	
 </distributionManagement>
